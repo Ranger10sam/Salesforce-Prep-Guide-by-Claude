@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samprit's Salesforce Prep — 8–12 LPA Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#080c10;--bg2:#0d1117;--bg3:#131920;--bg4:#192028;--border:#1e2733;--border2:#2a3545;
+--t1:#dde6f0;--t2:#8899ad;--t3:#4d6070;
+--acc:#00b4d8;--acc2:rgba(0,180,216,.12);--acc3:#48cae4;
+--grn:#3dd68c;--grn2:rgba(61,214,140,.1);
+--yel:#f4c430;--yel2:rgba(244,196,48,.1);
+--red:#f06060;--red2:rgba(240,96,96,.1);
+--pur:#b08df8;--pur2:rgba(176,141,248,.1);
+--org:#ff8c42;--org2:rgba(255,140,66,.1);
+--r:10px;--rs:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);line-height:1.65;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+.app{display:flex;min-height:100vh}
+.sidebar{width:265px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;display:flex;flex-direction:column}
+.sidebar-header{padding:22px 20px 14px;border-bottom:1px solid var(--border)}
+.sidebar-logo{font-family:'Instrument Serif',serif;font-size:19px;color:var(--t1)}
+.sidebar-logo em{color:var(--acc);font-style:italic}
+.sidebar-sub{font-size:10.5px;color:var(--t3);margin-top:5px;letter-spacing:.6px;text-transform:uppercase}
+.sidebar-nav{flex:1;padding:10px 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rs);cursor:pointer;transition:all .15s;font-size:13px;font-weight:500;color:var(--t2);margin-bottom:2px;position:relative}
+.nav-item:hover{background:var(--bg3);color:var(--t1)}
+.nav-item.active{background:var(--acc2);color:var(--acc);font-weight:600}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--acc);border-radius:2px}
+.nav-icon{width:27px;height:27px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:var(--bg3)}
+.nav-item.active .nav-icon{background:var(--acc2)}
+.nav-progress{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);margin-left:auto}
+.sidebar-footer{padding:14px 18px;border-top:1px solid var(--border);font-size:11px;color:var(--t3)}
+.sidebar-footer strong{color:var(--acc);font-weight:600}
+
+.main{margin-left:265px;flex:1;min-height:100vh}
+.main-scroll{padding:32px 40px;max-width:980px}
+
+.section-header{margin-bottom:28px}
+.section-title{font-family:'Instrument Serif',serif;font-size:30px;color:var(--t1);line-height:1.2}
+.section-title em{color:var(--acc);font-style:italic}
+.section-desc{font-size:14px;color:var(--t2);margin-top:8px;max-width:680px;line-height:1.7}
+.section-badge{display:inline-flex;align-items:center;gap:6px;background:var(--acc2);color:var(--acc);border:1px solid rgba(0,180,216,.25);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;margin-bottom:12px;letter-spacing:.4px}
+
+.q-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden;transition:border-color .2s}
+.q-card:hover{border-color:var(--border2)}
+.q-card.done{border-color:rgba(61,214,140,.25)}
+.q-card.done .q-header{background:rgba(61,214,140,.04)}
+
+.q-header{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;cursor:pointer;user-select:none}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);width:24px;flex-shrink:0;padding-top:2px}
+.q-text{flex:1;font-size:14.5px;font-weight:600;color:var(--t1);line-height:1.5}
+.q-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.q-tag{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:.3px;text-transform:uppercase}
+.tag-hot{background:var(--red2);color:var(--red)}
+.tag-core{background:var(--yel2);color:var(--yel)}
+.tag-deep{background:var(--pur2);color:var(--pur)}
+.tag-design{background:var(--org2);color:var(--org)}
+.check-btn{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:11px;transition:all .2s;flex-shrink:0}
+.check-btn:hover{border-color:var(--grn);color:var(--grn)}
+.q-card.done .check-btn{background:var(--grn2);border-color:var(--grn);color:var(--grn)}
+.chevron{color:var(--t3);font-size:12px;transition:transform .2s}
+.q-header.open .chevron{transform:rotate(180deg)}
+
+.q-body{display:none;border-top:1px solid var(--border);padding:18px 18px 18px 56px}
+.q-body.open{display:block}
+.answer-box{background:var(--bg3);border-radius:var(--rs);padding:16px 18px;margin-bottom:14px;font-size:13.5px;color:var(--t1);line-height:1.75}
+.answer-box code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg4);padding:2px 6px;border-radius:3px;color:var(--acc3)}
+.answer-box strong{color:var(--t1);font-weight:600}
+
+.tip-box{background:var(--yel2);border:1px solid rgba(244,196,48,.2);border-radius:var(--rs);padding:12px 16px;font-size:13px;color:#d4a800;line-height:1.6;margin-bottom:14px}
+.tip-box::before{content:'💡 Interview tip: ';font-weight:700;color:var(--yel)}
+.ctx-box{background:var(--pur2);border:1px solid rgba(176,141,248,.2);border-radius:var(--rs);padding:12px 16px;font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:14px}
+.ctx-box::before{content:'🔍 Deeper context: ';font-weight:700;color:var(--pur)}
+.ctx-box strong{color:var(--t1)}
+.warn-box{background:var(--red2);border:1px solid rgba(240,96,96,.2);border-radius:var(--rs);padding:12px 16px;font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:14px}
+.warn-box::before{content:'⚠️ Common mistake: ';font-weight:700;color:var(--red)}
+
+.links-row{display:flex;flex-wrap:wrap;gap:8px}
+.link-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--acc);text-decoration:none;background:var(--acc2);border:1px solid rgba(0,180,216,.2);padding:5px 12px;border-radius:20px;transition:all .15s}
+.link-pill:hover{background:rgba(0,180,216,.2);color:var(--acc3)}
+
+.code-block{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--rs);padding:14px 16px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a8c8e8;line-height:1.8;overflow-x:auto;white-space:pre}
+.code-block .kw{color:#b08df8}.code-block .str{color:#3dd68c}.code-block .cmt{color:#4d6070;font-style:italic}.code-block .cls{color:#f4c430}.code-block .num{color:#ff8c42}
+
+.progress-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:12px;overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--acc);border-radius:2px;transition:width .4s ease}
+
+.stats-row{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;flex:1;min-width:130px}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;color:var(--acc)}
+.stat-label{font-size:11px;color:var(--t3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+
+.mobile-toggle{display:none;position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--acc);color:#000;font-size:18px;border:none;cursor:pointer;z-index:200;box-shadow:0 4px 20px rgba(0,180,216,.35)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99}
+.sidebar-close{display:none;position:absolute;top:14px;right:14px;background:none;border:none;color:var(--t3);font-size:16px;cursor:pointer;padding:4px}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-close{display:block}
+  .mobile-toggle{display:flex;align-items:center;justify-content:center}
+  .overlay.open{display:block}
+  .main{margin-left:0}
+  .main-scroll{padding:20px 16px}
+  .stats-row{gap:8px}
+  .stat-card{min-width:100px;padding:12px 14px}
+}
+</style>
+</head>
+<body>
+
+<button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Samprit's <em>SF Prep</em></div>
+    <div class="sidebar-sub">Salesforce Dev — 8–12 LPA</div>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav"></nav>
+  <div class="sidebar-footer">Studied: <strong id="globalCount">0</strong> / <strong id="globalTotal">0</strong></div>
+</aside>
+
+<main class="main">
+  <div class="main-scroll" id="mainContent"></div>
+</main>
+</div>
+
+<script>
+const DATA = [
+
+// ─────────────────────────────────────────────
+// 1. APEX & OOP
+// ─────────────────────────────────────────────
+{id:"apex",title:"Apex & OOP Fundamentals",icon:"⚡",desc:"The first filter in every Salesforce technical interview. Expect 4–5 questions here. Interviewers at Accenture, Deloitte, and LTIMindtree SF CoEs all start with these.",questions:[
+
+{q:"What is Apex? How is it different from Java?",tag:"core",a:"Apex is a <strong>strongly-typed, object-oriented programming language</strong> compiled and executed on the Salesforce platform (multitenant cloud). It shares Java-like syntax but is Salesforce-specific. Key differences: Apex runs in a <strong>multitenant environment</strong> with enforced <strong>Governor Limits</strong> (Java has no such constraints). Apex has native DML (insert/update/delete records), SOQL (inline database queries), and direct access to Salesforce metadata. Java is a general-purpose language; Apex is platform-bound.",tip:"Your bridge answer: 'My 2+ years writing Apex gave me strong OOP fundamentals, and I also applied the same principles independently building a Spring Boot backend — so I understand both the platform-specific and general-purpose sides of backend development.'",ctx:"<strong>Why does Apex have governor limits?</strong> Because multiple orgs share the same server infrastructure. Salesforce enforces per-transaction limits (heap, CPU, DML, SOQL) to prevent any single org from monopolizing shared resources. This is the single most important concept that differentiates Apex from Java.",links:[["Salesforce Dev Docs — Apex Overview","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_intro_what_is_apex.htm"]]},
+
+{q:"Explain the 4 pillars of OOP in the context of Apex.",tag:"core",a:"<strong>Encapsulation:</strong> Using access modifiers (private, public, global, protected) to restrict direct field access. Your trigger handler classes with private helper methods are a real example. <strong>Inheritance:</strong> <code>extends</code> keyword — a common pattern is a base TriggerHandler class that child handlers extend (AccountTriggerHandler extends TriggerHandler). <strong>Polymorphism:</strong> Method overloading (same name, different params) and overriding (<code>virtual</code>/<code>override</code> keywords in Apex). <strong>Abstraction:</strong> <code>abstract</code> classes and <code>interface</code> declarations — e.g., a Callable interface in Apex for invocable action patterns.",tip:"Interviewers love when you give Salesforce-specific examples, not just textbook definitions. Mention the TriggerHandler base class pattern specifically — it shows framework awareness.",ctx:"<strong>Apex-specific OOP quirk:</strong> Unlike Java, Apex requires the <code>virtual</code> keyword on a method for it to be overridable. Without <code>virtual</code>, the method cannot be overridden. You also need the <code>override</code> keyword in the subclass — it's more explicit than Java.",links:[["SF Docs — Apex OOP","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_understanding.htm"]]},
+
+{q:"What are the Apex access modifiers and when do you use each?",tag:"core",a:"<strong>private:</strong> accessible only within the declaring class — used for helper methods and internal state. <strong>public:</strong> accessible within the same namespace/package. <strong>global:</strong> accessible from any Apex code anywhere, including external packages — required for web service methods (@WebService, REST resources), scheduled jobs (Schedulable interface implementations), and anything consumed by managed packages. <strong>protected:</strong> accessible within the class and by inner or extending classes. Rule of thumb: default to private, use public for service class APIs, global only when Salesforce platform requires it.",tip:"'I default to private and promote visibility only when needed — this keeps classes easy to refactor. At Cognizant, this was a code review standard on the Abbott project.'",ctx:"<strong>Common interview trap:</strong> Asking when to use <code>global</code> vs <code>public</code>. Answer: global is ONLY needed when your class/method must be accessible from a different managed package namespace, or when Salesforce requires it (Batch execute(), Schedulable execute(), etc.). Using global everywhere is an anti-pattern — it locks your API surface permanently.",links:[["SF Docs — Access Modifiers","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_access_modifiers.htm"]]},
+
+{q:"What are interfaces in Apex? Name the key platform interfaces.",tag:"hot",a:"An interface defines a contract — a set of method signatures that implementing classes must fulfill. No method bodies in the interface itself. Key Salesforce platform interfaces you must know: <code>Database.Batchable&lt;T&gt;</code> (start, execute, finish), <code>Schedulable</code> (execute), <code>Queueable</code> (execute), <code>Database.Stateful</code> (preserve state across batch chunks), <code>Callable</code> (call method for loosely coupled invocation). Interfaces enable polymorphism — you can write code against the interface type and swap implementations.",tip:"Name at least 3 platform interfaces from memory. Interviewers at MNC SIs (Accenture, Deloitte) test this directly. Saying 'I've implemented Batchable, Queueable, and Schedulable in production at Cognizant' is very strong.",links:[["SF Docs — Interfaces","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_interfaces.htm"]]},
+
+{q:"What is the difference between static and instance methods/variables in Apex?",tag:"core",a:"<strong>Static:</strong> belongs to the class itself, not an instance. Shared across all instances, accessible via ClassName.method(). In Apex, static variables are reset with every transaction (unlike Java where they persist for the JVM lifetime). <strong>Instance:</strong> belongs to a specific object — each instantiation has its own copy. Static variables in Apex are useful for <strong>recursion control</strong> in triggers (a static Boolean flag that prevents re-entry into trigger logic after the first fire).",tip:"The recursion control pattern is a must-know: <code>public static Boolean isFirstRun = true;</code> in a helper class. Check and set this flag in your trigger handler to prevent infinite trigger loops on record updates.",ctx:"<strong>Critical Apex distinction:</strong> In Java, static variables live for the lifetime of the JVM. In Apex, static variables only live for the duration of a single transaction. So static variables in Apex are per-transaction, not truly persistent. This matters for understanding why Apex uses Custom Settings/Custom Metadata for persistent config rather than static fields.",links:[["SF Docs — Static Variables","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_static.htm"]]},
+
+{q:"Explain Collections in Apex — List, Set, Map.",tag:"core",a:"<strong>List:</strong> ordered, duplicates allowed, index-accessible. Most common — SOQL returns a List of sObjects. <code>List&lt;Account&gt; accounts = [SELECT Id FROM Account]</code>. <strong>Set:</strong> unordered, no duplicates, fast membership checks. Used to collect unique Ids for bulk SOQL patterns. <strong>Map:</strong> key-value pairs, no duplicate keys. The most important for bulkification — <code>Map&lt;Id, Account&gt; accountMap = new Map&lt;Id, Account&gt;([SELECT Id, Name FROM Account])</code>. Map from SOQL auto-uses the Id as key.",tip:"Map is the single most used collection in production Apex. The pattern of building a Map inside a trigger's before-context to avoid re-querying in the loop is something you should be able to code from memory.",ctx:"<strong>Key performance distinction:</strong> Set.contains() is O(1). List lookup by value is O(n). When you need to check 'does this Id exist in my collection' inside a loop, always use a Set — never iterate a List. This directly ties to Governor Limit compliance.",links:[["SF Docs — Collections","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections.htm"]]},
+
+{q:"How does exception handling work in Apex?",tag:"core",a:"Try-catch-finally structure similar to Java. Apex exception hierarchy: Exception is the base. Common types: <code>DmlException</code> (DML failures — field required, duplicate), <code>QueryException</code> (too many rows, no rows on getSingleResult), <code>LimitException</code> (governor limit exceeded — cannot be caught), <code>NullPointerException</code>. Custom exceptions: <code>public class MyAppException extends Exception {}</code>. For DML in bulk, use <code>Database.insert(records, false)</code> with <code>Database.SaveResult[]</code> to handle partial success instead of all-or-nothing.",tip:"<strong>Critical point:</strong> LimitException (governor limit hit) CANNOT be caught. The transaction dies. This is why you avoid hitting limits rather than catching them. Mentioning this shows senior awareness.",ctx:"<strong>DML exception handling strategy:</strong> Prefer Database.insert/update/delete with allOrNone=false for bulk operations where partial success is acceptable. Then loop through SaveResult[] to log failures. This is used in Batch Apex execute() methods where you want the chunk to continue even if some records fail.",links:[["SF Docs — Exception Handling","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_exception_definition.htm"]]},
+
+{q:"What is the difference between abstract classes and virtual classes in Apex?",tag:"deep",a:"<strong>Abstract class:</strong> cannot be instantiated, must be extended. Can contain both abstract methods (no body — subclass must implement) and concrete methods (with body). <strong>Virtual class/method:</strong> CAN be instantiated and can also be extended. A virtual method has a default implementation that <em>may</em> be overridden (using <code>override</code> keyword). In Java, all non-final methods are implicitly virtual. In Apex, you must explicitly declare <code>virtual</code>. The TriggerHandler pattern uses a virtual class: a base handler with virtual methods (beforeInsert, afterUpdate, etc.) that subclasses selectively override.",tip:"'In Apex, unlike Java, you can't override a method unless it's declared virtual or abstract. I use this in trigger frameworks — the base handler has virtual no-op methods, and child handlers override only what they need.'",links:[["SF Docs — Virtual and Abstract Classes","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_abstract.htm"]]},
+
+]},
+
+// ─────────────────────────────────────────────
+// 2. GOVERNOR LIMITS
+// ─────────────────────────────────────────────
+{id:"govlimits",title:"Governor Limits",icon:"🔒",desc:"The single most Salesforce-specific topic. Every interviewer will probe this. Candidates who know the numbers AND the patterns score significantly higher. This is where your experience at Abbott/Zoetis pays off.",questions:[
+
+{q:"What are Governor Limits? Why do they exist?",tag:"hot",a:"Governor Limits are <strong>per-transaction runtime constraints</strong> enforced by the Salesforce platform to ensure fair use of shared multitenant infrastructure. Because thousands of orgs run on the same servers, Salesforce caps what any single transaction can consume. Key limits per transaction: <strong>100 SOQL queries</strong>, <strong>150 DML statements</strong>, <strong>6MB heap size</strong>, <strong>10 seconds CPU time</strong>, <strong>10 callouts</strong>, <strong>50,000 records returned from SOQL</strong>, <strong>10,000 DML rows</strong>.",tip:"Memorise these 6 numbers: 100 SOQL / 150 DML / 6MB heap / 10s CPU / 10 callouts / 50,000 rows. Reciting them fluently signals production experience. Then pivot to: 'At Cognizant on the Abbott project, I designed all Apex with bulkification and limit-aware patterns as a non-negotiable baseline.'",ctx:"<strong>Async Apex gets higher limits:</strong> Future methods, Queueable, and Batch Apex all execute in their own transaction context with the same per-transaction limits, but the key advantage is that they don't count against the synchronous transaction that enqueued them. Batch Apex splits work into chunks — each chunk is a separate transaction, giving you 200 records × 100 SOQL per chunk.",links:[["SF Docs — Governor Limits","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm"],["Trailhead — Governor Limits","https://trailhead.salesforce.com/content/learn/modules/apex_triggers/apex_triggers_intro"]]},
+
+{q:"What is bulkification? Why is it critical?",tag:"hot",a:"Bulkification means writing Apex that handles <strong>multiple records in a single transaction</strong> efficiently, rather than processing one record at a time. Core principle: <strong>never put SOQL or DML inside a loop</strong>. The bulkification pattern: collect all relevant Ids from the trigger's Trigger.new list → query once outside the loop to build a Map → loop through records using the Map for lookups → collect DML operations into a List → perform one DML at the end.",tip:"Be ready to write this live. Code it mentally: (1) Set of Ids, (2) one SOQL into a Map, (3) loop through Trigger.new using the Map, (4) List for DML, (5) one DML outside the loop. Five steps, can be written in under 2 minutes.",ctx:"<strong>Why does this matter operationally?</strong> If a user uploads 200 Accounts via data loader, your trigger fires once with Trigger.new containing 200 records. If your trigger has a SOQL inside the loop, that's 200 SOQL queries — instantly exceeds the 100-query limit. Bulkification is the only reason triggers survive bulk operations.",
+code:`// BAD — SOQL inside loop (hits limits at 101 records)
+for (Account acc : Trigger.new) {
+    Contact c = [SELECT Id FROM Contact WHERE AccountId = :acc.Id LIMIT 1]; // ❌
+}
+
+// GOOD — Bulkified
+Set<Id> accIds = new Set<Id>();
+for (Account acc : Trigger.new) { accIds.add(acc.Id); }
+
+Map<Id, Contact> contactMap = new Map<Id, Contact>(
+    [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accIds]
+);
+List<Account> toUpdate = new List<Account>();
+for (Account acc : Trigger.new) {
+    if (contactMap.containsKey(acc.Id)) {
+        toUpdate.add(acc); // collect DML
+    }
+}
+if (!toUpdate.isEmpty()) update toUpdate; // one DML ✅`,
+links:[["SF Docs — Bulk Apex Best Practices","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_best_practices.htm"]]},
+
+{q:"What is Limits class? How do you use it?",tag:"core",a:"The <code>Limits</code> class provides methods to check current governor limit usage at runtime. Key methods: <code>Limits.getQueries()</code> — queries used so far. <code>Limits.getLimitQueries()</code> — max allowed (100). <code>Limits.getDmlStatements()</code>, <code>Limits.getLimitDmlStatements()</code>. <code>Limits.getCpuTime()</code>, <code>Limits.getHeapSize()</code>. Used in framework code, logging utilities, and defensive code to avoid hitting limits.",tip:"Mention Limits class in the context of your utility/helper classes: 'In our trigger framework at Cognizant, we logged Limits usage at the end of each transaction for monitoring in high-traffic contexts like the Zoetis org.'",
+code:`// Example: defensive limit check before bulk operation
+if (Limits.getQueries() < Limits.getLimitQueries() - 5) {
+    // safe to query
+} else {
+    // log warning, defer to async
+}`,
+links:[["SF Docs — Limits Class","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_limits.htm"]]},
+
+{q:"How do you avoid hitting SOQL query limits?",tag:"hot",a:"<strong>1. Never SOQL in loops</strong> — the first rule. <strong>2. Use relationship queries</strong> instead of multiple queries: <code>SELECT Id, (SELECT Id FROM Contacts) FROM Account</code> counts as ONE query. <strong>3. Use selective filters</strong> on indexed fields (Id, Name, custom external Id fields) — avoids full-table scans that time out on large orgs. <strong>4. Cache query results</strong> in a Map for reuse within the same transaction. <strong>5. Use Custom Settings / Custom Metadata</strong> instead of querying config records repeatedly — CS queries don't count against SOQL limits if accessed via static methods. <strong>6. Use SOQL for Loops</strong> for large result sets: <code>for (Account acc : [SELECT Id FROM Account])</code> — processes in internal chunks of 200, avoiding heap spike.",tip:"Custom Settings being exempt from SOQL limits is a powerful interview talking point — it shows platform depth, not just syntax knowledge.",ctx:"<strong>Relationship query gotcha:</strong> Parent-to-child sub-queries count as 1 SOQL each, but child-to-parent dot notation (Account.Name) doesn't add an extra query. A single query can have up to 1 parent-child sub-select.",links:[["SF Docs — SOQL Best Practices","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_SOSL_best_practices.htm"]]},
+
+{q:"What are CPU time limits and how do you deal with them?",tag:"deep",a:"10 seconds synchronous CPU time per transaction (60 seconds for async). Causes: <strong>complex loops on large datasets</strong>, string manipulation on thousands of records, regex operations, excessive method call overhead. Solutions: <strong>1. Move heavy processing to async</strong> (Queueable/Batch). <strong>2. Reduce loop complexity</strong> — flatten nested loops where possible. <strong>3. Use efficient data structures</strong> — Set/Map lookups are O(1) vs List iteration O(n). <strong>4. Avoid String operations inside large loops</strong> — use StringBuilder-style patterns. <strong>5. Monitor with Limits.getCpuTime()</strong> at checkpoints.",tip:"Mentioning CPU limits beyond SOQL/DML limits marks you as experienced. Most junior devs only know SOQL limits. Say: 'On the Abbott project, we hit CPU limits on a nightly batch due to nested string processing — I refactored to use Maps for lookups, which brought CPU usage from ~8s to under 2s.'",links:[["SF Docs — Governor Limits","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm"]]},
+
+]},
+
+// ─────────────────────────────────────────────
+// 3. SOQL & DML
+// ─────────────────────────────────────────────
+{id:"soql",title:"SOQL & DML",icon:"🗄️",desc:"Database interaction is constant in Apex development. Expect SOQL optimization questions at every level. For 8–12 LPA roles, interviewers specifically probe selective querying, relationship queries, and DML best practices.",questions:[
+
+{q:"What is SOQL? How is it different from SQL?",tag:"core",a:"SOQL (Salesforce Object Query Language) queries the Salesforce database. Similarities to SQL: SELECT, FROM, WHERE, ORDER BY, LIMIT, GROUP BY, HAVING. Key differences: <strong>no JOIN</strong> — relationships are traversed via dot notation (parent) or sub-queries (child). <strong>No</strong> INSERT/UPDATE/DELETE — those are DML statements. <strong>No</strong> wildcard SELECT * — must specify fields. SOQL supports relationship traversal: <code>Account.Name</code> from a Contact context, or <code>(SELECT Id FROM Contacts)</code> sub-query from Account. SOQL also supports <strong>Polymorphic Queries</strong> and <strong>TYPEOF</strong> for polymorphic fields like WhoId.",tip:"Leading with 'no JOIN in SOQL, relationships are handled via parent dot notation or child sub-queries' shows you understand the object model, not just the syntax.",links:[["SF Docs — SOQL Reference","https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select.htm"]]},
+
+{q:"What is the difference between SOQL and SOSL?",tag:"core",a:"<strong>SOQL</strong> queries a <strong>single object</strong> (and related child objects). You know the object you're searching. Used for targeted record retrieval. <strong>SOSL</strong> (Salesforce Object Search Language) searches <strong>multiple objects simultaneously</strong> using full-text search index. Syntax: <code>FIND 'search term' IN ALL FIELDS RETURNING Account(Id, Name), Contact(Id, FirstName)</code>. SOSL is faster for full-text search across multiple objects. SOQL is better when you know the object and filters.",tip:"Use case framing: 'SOQL is your SELECT — I know the object and criteria. SOSL is your search engine — I have a keyword and want to find it anywhere. For the Abbott search feature, I used SOSL to find records across Account and Contact simultaneously.'",ctx:"<strong>SOSL quirk:</strong> SOSL is transactionally consistent in Apex — it searches the real-time database, not a search index lag. But it has its own governor limit: 20 SOSL queries per transaction (vs 100 SOQL).",links:[["SF Docs — SOSL Reference","https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl.htm"]]},
+
+{q:"What makes a SOQL query selective? Why does it matter?",tag:"hot",a:"A query is <strong>selective</strong> if its WHERE clause filters on <strong>indexed fields</strong> and returns a small percentage of total records. Salesforce automatically indexes: Id, Name, Owner, CreatedDate, Last Modified Date, Master-detail/Lookup relationship fields, External Id fields. Non-selective queries on large objects (500k+ records) cause <strong>SOQL query timeouts</strong> — one of the hardest production issues to debug. Signs of non-selective queries: no WHERE clause, filtering on non-indexed formula fields, LIKE with a leading wildcard (<code>LIKE '%value'</code>). Fix: add index-aware filters, use <code>Limits</code> monitoring, request a custom index via Salesforce support.",tip:"'On the Zoetis org with millions of records, I always validated query selectivity during code review — specifically checking that WHERE clauses had indexed field filters. A non-selective query that works in dev sandbox fails catastrophically in prod on large orgs.' That sentence will impress any interviewer.",ctx:"<strong>Query plan tool:</strong> Salesforce provides a Query Plan tool in Developer Console. It shows the cost score of your query — a score above 1.0 means the query will do a full-table scan. You should use this before deploying any SOQL that runs on large datasets.",links:[["SF Docs — Query Optimization","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_SOSL_best_practices.htm"]]},
+
+{q:"What is the difference between DML statements and Database class methods?",tag:"hot",a:"<strong>DML statements</strong> (<code>insert/update/delete/upsert/merge/undelete</code>): All-or-nothing — if any record fails, the entire DML operation rolls back and throws a DmlException. <strong>Database class methods</strong> (<code>Database.insert(records, false)</code>): Partial success allowed — returns <code>Database.SaveResult[]</code> with success/error per record. Also: Database methods support <code>allOrNone</code> parameter (true = same as DML statement, false = partial). Use DML when all records must succeed together (transactional integrity). Use Database methods in Batch Apex or bulk integrations where partial success is acceptable.",tip:"'I use Database class methods with allOrNone=false in Batch execute() methods and log failures to a custom error object — this prevents one bad record from rolling back an entire batch chunk of 200 records.' That's a production-grade answer.",
+code:`// Database.insert with partial success + error logging
+List<Database.SaveResult> results = Database.insert(recordsToInsert, false);
+List<Error_Log__c> errors = new List<Error_Log__c>();
+for (Integer i = 0; i < results.size(); i++) {
+    if (!results[i].isSuccess()) {
+        errors.add(new Error_Log__c(
+            Record_Id__c = recordsToInsert[i].Id,
+            Error_Message__c = results[i].getErrors()[0].getMessage()
+        ));
+    }
+}
+if (!errors.isEmpty()) insert errors;`,
+links:[["SF Docs — Database Methods","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_database.htm"]]},
+
+{q:"What is upsert? When would you use it?",tag:"core",a:"<code>upsert</code> is a combined insert/update: if a matching record exists, update it; otherwise, insert it. Match is by record Id, external Id field, or an explicitly specified field. Common use cases: data integration patterns where you don't know if the record already exists, preventing duplicates during recurring data syncs. Syntax: <code>upsert records External_Id__c</code> — uses the External_Id__c field as the matching key.",tip:"'In Zoetis integrations, we used upsert with an external system ID field as the key — it handled both initial loads and delta syncs without needing to query first. This saved 1 SOQL per record and simplified the logic significantly.'",links:[["SF Docs — upsert Statement","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_dml_examples_upsert.htm"]]},
+
+{q:"What are relationship queries? Explain parent and child queries.",tag:"core",a:"<strong>Parent-to-child (child sub-query):</strong> From a parent object, include related child records: <code>SELECT Id, Name, (SELECT Id, Subject FROM Cases) FROM Account</code>. The child sub-select is accessed via <code>account.Cases</code> in Apex. <strong>Child-to-parent (dot notation):</strong> From a child object, traverse up: <code>SELECT Id, Account.Name, Account.BillingCity FROM Contact</code>. Access via <code>contact.Account.Name</code>. Counts as one SOQL query either way. Limitation: you can have up to 1 child sub-select per query, and only 5 levels of parent traversal.",tip:"'For Abbott's reporting logic, I used child sub-queries to pull parent + related child records in a single SOQL — this reduced our query count per transaction by 40%, keeping us well within governor limits on batch operations.'",links:[["SF Docs — Relationship Queries","https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships.htm"]]},
+
+]},
+
+// ─────────────────────────────────────────────
+// 4. TRIGGERS & TRIGGER FRAMEWORKS
+// ─────────────────────────────────────────────
+{id:"triggers",title:"Triggers & Frameworks",icon:"⚙️",desc:"The backbone of Apex backend development. Trigger framework architecture questions are extremely common at MNC SI interviews (Accenture, Deloitte, Infosys). You have direct production experience here — own it.",questions:[
+
+{q:"What is a Salesforce Trigger? What are trigger events?",tag:"core",a:"A Trigger is Apex code that executes <strong>before or after</strong> DML events on a specific sObject. Trigger events: <strong>before insert, before update, before delete, after insert, after update, after delete, after undelete</strong>. Context variables: <code>Trigger.new</code> (new record values — available in insert/update), <code>Trigger.old</code> (previous values — available in update/delete), <code>Trigger.newMap</code> and <code>Trigger.oldMap</code> (Map versions). <code>Trigger.isBefore</code>, <code>Trigger.isAfter</code>, <code>Trigger.isInsert</code>, <code>Trigger.isUpdate</code> for conditional logic.",tip:"State the best practice immediately: 'I follow one trigger per object — all logic routed to a handler class. The trigger itself should contain no business logic, just dispatch calls to the handler.'",links:[["SF Docs — Apex Triggers","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers.htm"]]},
+
+{q:"What is a trigger framework and why should you use one?",tag:"hot",a:"A trigger framework is a design pattern that enforces <strong>one trigger per object</strong> and routes all logic to handler classes. Benefits: <strong>prevents multiple triggers on the same object</strong> (execution order is undefined), <strong>centralizes business logic</strong> out of the trigger file, <strong>enables recursion control</strong> via static flags, <strong>improves testability</strong> (test handler methods directly), <strong>easier maintenance</strong>. Standard pattern: a base <code>TriggerHandler</code> virtual class with virtual methods for each trigger event; object-specific handlers extend it and override only the needed methods. The trigger calls <code>new AccountTriggerHandler().run()</code>.",tip:"Name a specific framework you've used: Kevin O'Hara's TriggerHandler framework is the industry standard for SI projects. If used at Cognizant, say so. Demonstrating you know the why behind the framework separates you from candidates who just copy patterns.",
+code:`// AccountTrigger.trigger
+trigger AccountTrigger on Account (before insert, after insert, before update, after update) {
+    new AccountTriggerHandler().run(); // dispatch only
+}
+
+// AccountTriggerHandler.cls
+public class AccountTriggerHandler extends TriggerHandler {
+    override public void beforeInsert() {
+        AccountService.validateAccounts(Trigger.new);
+    }
+    override public void afterUpdate() {
+        AccountService.syncRelatedContacts(Trigger.newMap, Trigger.oldMap);
+    }
+}`,
+links:[["Kevin O'Hara TriggerHandler Framework","https://github.com/kevinohara80/sfdc-trigger-framework"],["SF Best Practices — Trigger Framework","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_bestpract.htm"]]},
+
+{q:"What is trigger recursion? How do you prevent it?",tag:"hot",a:"Trigger recursion happens when a trigger performs a DML operation that fires the same (or another) trigger, creating an infinite loop until governor limits are hit. Classic example: AccountTrigger updates Account on after insert → this fires AccountTrigger again → infinite loop. Prevention patterns: <strong>1. Static Boolean flag:</strong> <code>public static Boolean isFirstRun = true;</code> — check before running, set to false after first execution. <strong>2. Static Set of processed Ids:</strong> collect processed record Ids; skip records already processed. The Set method is more robust in complex update chains.",tip:"'On a Cognizant project, we used a static Set-based approach rather than a simple Boolean — it handles partial updates where only some records in a batch needed processing, whereas a Boolean would have blocked all records after the first chunk.'",
+code:`// Static Set-based recursion control (more robust)
+public class TriggerHelper {
+    public static Set<Id> processedIds = new Set<Id>();
+}
+
+// In trigger handler
+public void afterUpdate() {
+    List<Account> toProcess = new List<Account>();
+    for (Account acc : Trigger.new) {
+        if (!TriggerHelper.processedIds.contains(acc.Id)) {
+            TriggerHelper.processedIds.add(acc.Id);
+            toProcess.add(acc);
+        }
+    }
+    if (!toProcess.isEmpty()) AccountService.process(toProcess);
+}`,
+links:[["SF Docs — Trigger Recursion","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_bestpract.htm"]]},
+
+{q:"What is the difference between before and after triggers?",tag:"core",a:"<strong>Before triggers:</strong> fire before the record is saved to the database. You can modify <code>Trigger.new</code> values directly without an additional DML call — perfect for field validation, defaulting, and normalization. <strong>After triggers:</strong> fire after the record is committed. <code>Trigger.new</code> values are read-only. Used for operations on related records, creating related records, platform events, callouts (via async). Rule: use before triggers for changes to the triggering record itself; use after triggers for anything involving other records or external systems.",tip:"'I use before triggers for field derivation and validation — zero extra DML needed since changes to Trigger.new are auto-saved. After triggers for related-record work or async callouts. This kept our DML count low on the Abbott project.'",links:[["SF Docs — Before vs After Triggers","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_sequence.htm"]]},
+
+{q:"In what order do Salesforce automation tools execute?",tag:"deep",a:"The Salesforce order of execution (key sequence): <strong>1.</strong> System validation (required fields, field format). <strong>2.</strong> Before triggers. <strong>3.</strong> System validation again + custom validation rules. <strong>4.</strong> Duplicate rules. <strong>5.</strong> Record saved to database (not committed). <strong>6.</strong> After triggers. <strong>7.</strong> Assignment rules, auto-response rules. <strong>8.</strong> Workflow rules (including field updates → re-runs steps 1–7 minus triggers). <strong>9.</strong> Escalation rules. <strong>10.</strong> Entitlement rules. <strong>11.</strong> Process Builder / Flows. <strong>12.</strong> Roll-up summary fields updated. <strong>13.</strong> Commit to database. <strong>14.</strong> Post-commit: emails sent, async jobs enqueued.",tip:"For interviews, prioritize steps 2 (before triggers), 6 (after triggers), 8 (Workflow field updates re-trigger steps 1–7), and 11 (Flows). Getting those right matters more than memorizing all 14. Workflow field updates causing a partial re-run is the most common exam and interview trap.",ctx:"<strong>Why does it matter?</strong> Workflow field updates re-run before/after triggers if the field update causes a change. This is a key source of unexpected trigger recursion. It's also why Salesforce is moving from Workflow Rules to Flows — Flows execute after triggers and are more predictable.",links:[["SF Docs — Order of Execution","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm"]]},
+
+]},
+
+// ─────────────────────────────────────────────
+// 5. ASYNC APEX
+// ─────────────────────────────────────────────
+{id:"async",title:"Async Apex",icon:"⏳",desc:"Future, Batch, Queueable, Schedulable — the async quadrant. Interviewers love this area because it tests whether you understand Salesforce's execution model. Know each type's use case, limits, and when to pick one over another.",questions:[
+
+{q:"Why do we need Async Apex? What are its benefits?",tag:"core",a:"Async Apex executes outside the synchronous transaction context. Benefits: <strong>1. Runs in its own governor limit context</strong> — doesn't consume limits from the triggering transaction. <strong>2. Higher limits for certain operations</strong> — async jobs have 60s CPU (vs 10s sync). <strong>3. Enables callouts from trigger context</strong> — direct callouts from triggers are not allowed (database may roll back); async methods allow this. <strong>4. Processes large volumes</strong> — Batch Apex can handle millions of records in chunks. <strong>5. Scheduled execution</strong> — run jobs at specific times via Schedulable interface.",tip:"Always frame async as 'decoupled from the user transaction' — this is the key mental model. The user doesn't wait; the job runs in background.",links:[["SF Docs — Async Apex Overview","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_async_overview.htm"]]},
+
+{q:"Explain @future methods — when to use them and their limitations.",tag:"hot",a:"<code>@future</code> annotation marks a static method for asynchronous execution. Runs in a separate thread after the current transaction commits. <strong>Use cases:</strong> making callouts from a trigger context, mixed DML workarounds (insert Setup and non-Setup objects in the same context), isolated operations that don't need return values. <strong>Limitations:</strong> cannot chain (can't call another @future from a @future), no return value (void only), parameters must be primitive types or collections of primitives (no sObject — use Ids and re-query inside), maximum 50 future calls per Apex invocation, 250,000 per org per day.",tip:"'@future is my go-to for callouts triggered from DML events — I pass a Set<Id> of record Ids, re-query inside the method to get fresh data, then make the callout. No sObjects as parameters is a common gotcha I always remind junior devs about.'",ctx:"<strong>Why no sObject parameters?</strong> Because by the time the future method runs, the sObject's field values in the heap could be stale (another transaction may have updated the record). Passing Ids forces you to re-query, guaranteeing fresh data.",links:[["SF Docs — Future Methods","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_invoking_future_methods.htm"]]},
+
+{q:"What is Batch Apex? Walk through the interface methods.",tag:"hot",a:"Batch Apex processes <strong>large volumes of records</strong> by breaking them into chunks. Implements <code>Database.Batchable&lt;sObject&gt;</code>. Three methods: <strong>start(Database.BatchableContext bc)</strong> — called once, returns a QueryLocator or Iterable defining the full dataset (QueryLocator supports up to 50M records). <strong>execute(Database.BatchableContext bc, List&lt;sObject&gt; scope)</strong> — called once per chunk (default 200 records), has full governor limits per chunk. <strong>finish(Database.BatchableContext bc)</strong> — called once after all chunks complete, used for notifications or chaining next batch. Enqueue with: <code>Database.executeBatch(new MyBatch(), batchSize);</code>",tip:"Know the default and limits: default batch size 200, max 2,000, min 1. For Apex callouts within batch, implement <code>Database.AllowsCallouts</code>. For preserving state across chunks, implement <code>Database.Stateful</code>.",
+code:`public class AccountBatch implements Database.Batchable<sObject>, Database.Stateful {
+    public Integer processedCount = 0; // Stateful — persists across chunks
+
+    public Database.QueryLocator start(Database.BatchableContext bc) {
+        return Database.getQueryLocator([SELECT Id, Name FROM Account WHERE IsActive__c = true]);
+    }
+    public void execute(Database.BatchableContext bc, List<Account> scope) {
+        processedCount += scope.size();
+        // process records — full governor limits per chunk
+        List<Account> toUpdate = new List<Account>();
+        for (Account acc : scope) {
+            acc.Processed__c = true;
+            toUpdate.add(acc);
+        }
+        Database.update(toUpdate, false);
+    }
+    public void finish(Database.BatchableContext bc) {
+        System.debug('Total processed: ' + processedCount);
+        // send notification email, chain next batch, etc.
+    }
+}`,
+links:[["SF Docs — Batch Apex","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm"]]},
+
+{q:"What is Queueable Apex? How is it better than @future?",tag:"hot",a:"Queueable Apex implements the <code>Queueable</code> interface with an <code>execute(QueueableContext ctx)</code> method. Advantages over @future: <strong>1. Can accept non-primitive parameters</strong> (sObjects, custom objects — unlike @future which requires primitives). <strong>2. Can chain jobs</strong> — call <code>System.enqueueJob(new NextJob())</code> from within execute() to create a job chain. <strong>3. Returns a Job Id</strong> — trackable in AsyncApexJob, unlike @future which is fire-and-forget. <strong>4. Supports callouts</strong> (with <code>Database.AllowsCallouts</code>). Limit: max 1 chained job per execute(), max 50 queued jobs in a transaction.",tip:"'I migrated some @future callout patterns to Queueable on the Zoetis project specifically to enable retry logic — the Job Id lets you query AsyncApexJob status and re-enqueue on failure, which you can't do with @future.'",links:[["SF Docs — Queueable Apex","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm"]]},
+
+{q:"What is Scheduled Apex? How do you schedule a job?",tag:"core",a:"Implements the <code>Schedulable</code> interface with an <code>execute(SchedulableContext sc)</code> method. Scheduled using a CRON expression via <code>System.schedule('Job Name', cronExpression, new MyScheduledJob())</code>. CRON format in Apex: <code>Seconds Minutes Hours Day_of_month Month Day_of_week Year</code>. Example for daily at 3am: <code>'0 0 3 * * ?'</code>. Common pattern: the Schedulable class is a thin wrapper that calls <code>Database.executeBatch()</code> inside its execute() — so scheduled jobs typically launch Batch Apex.",tip:"'For ChefBit's backend I used Spring CRON jobs. In Salesforce, I've implemented Scheduled Apex on Abbott to run nightly data reconciliation — thin Schedulable class that kicks off a Batch job. The Schedulable class itself contains no business logic.'",
+code:`// Daily 3am schedule — thin Schedulable launching a Batch
+public class DailyReconciliationScheduler implements Schedulable {
+    public void execute(SchedulableContext sc) {
+        Database.executeBatch(new AccountReconciliationBatch(), 200);
+    }
+}
+// Schedule via: System.schedule('Daily Reconcile', '0 0 3 * * ?', new DailyReconciliationScheduler());`,
+links:[["SF Docs — Scheduled Apex","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm"]]},
+
+{q:"When would you choose Batch vs Queueable vs Future?",tag:"deep",a:"<strong>@future:</strong> Simple, fire-and-forget background operation. One-time async callout or DML. No need to track, chain, or handle large volumes. <strong>Queueable:</strong> When you need to chain jobs, pass complex objects, or track execution. Multi-step workflows, complex object state, callout with retry logic. <strong>Batch:</strong> Large record volumes (thousands to millions). Needs chunked processing, stateful aggregation, or scheduled mass data operations. <strong>Schedulable:</strong> Time-based recurring execution — almost always wraps Batch or Queueable.",tip:"Frame as a decision tree: 'Is it a large dataset? → Batch. Does it need chaining or tracking? → Queueable. Is it a simple one-off background task? → @future. Is it time-driven? → Schedulable wrapping one of the above.'",links:[["Trailhead — Async Apex","https://trailhead.salesforce.com/content/learn/modules/asynchronous_apex"]]},
+
+]},
+
+// ─────────────────────────────────────────────
+// 6. TESTING IN APEX
+// ─────────────────────────────────────────────
+{id:"testing",title:"Apex Testing",icon:"🧪",desc:"Salesforce enforces a 75% code coverage minimum for deployment to production. Interviewers care about test quality, not just coverage numbers. Your experience with test classes at Cognizant is a differentiator here.",questions:[
+
+{q:"What are the requirements for Apex tests?",tag:"core",a:"<strong>Minimum 75% code coverage</strong> for production deployment. Coverage is per-org across all Apex code. Methods must use <code>@isTest</code> annotation. Test classes should use <code>@isTest</code> class annotation. No DML on real data — use <code>Test.startTest()</code> and <code>Test.stopTest()</code> to create isolated governor limit contexts. <code>System.assert()</code>, <code>System.assertEquals()</code>, <code>System.assertNotEquals()</code> for validation. Tests run in isolation — no access to real org data unless <code>@isTest(SeeAllData=true)</code> (strongly discouraged).",tip:"75% is the floor, not the target. Say: 'At Cognizant, our team standard was 85%+ coverage with meaningful assertions — we reviewed for assertion quality, not just line coverage. A test that doesn't assert anything is useless regardless of the coverage number.'",links:[["SF Docs — Apex Testing","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing.htm"]]},
+
+{q:"What is Test.startTest() and Test.stopTest()? Why are they important?",tag:"hot",a:"<code>Test.startTest()</code> creates a new governor limit context — code inside gets fresh limits separate from the test setup code. <code>Test.stopTest()</code> marks the end and <strong>forces all async operations to complete synchronously</strong> — this is how you test @future methods, Queueable, and Batch in tests. Without stopTest(), async jobs are enqueued but not executed before your assertions run, so your test would fail.",tip:"'I always wrap the actual system-under-test call in startTest/stopTest, even for synchronous code — this ensures setup data creation doesn't eat into the governor limits that the real logic needs during testing.'",
+code:`@isTest
+static void testFutureCallout() {
+    // Setup data — uses its own governor limits
+    Account acc = new Account(Name='Test Account');
+    insert acc;
+
+    Test.startTest();
+    // Fresh limits — trigger the async operation
+    MyFutureClass.processAccount(acc.Id);
+    Test.stopTest(); // forces @future to execute before assertions
+
+    // Now assert the result
+    Account updated = [SELECT Status__c FROM Account WHERE Id = :acc.Id];
+    System.assertEquals('Processed', updated.Status__c);
+}`,
+links:[["SF Docs — Test.startTest()","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_tools.htm"]]},
+
+{q:"What is Test.setMock()? How do you test HTTP callouts?",tag:"hot",a:"You cannot make real HTTP callouts in Apex tests — Salesforce blocks them. Use <code>Test.setMock(HttpCalloutMock.class, new MyMockImpl())</code> to register a mock. Create a class implementing <code>HttpCalloutMock</code> with a <code>respond(HttpRequest req)</code> method that returns a fabricated <code>HttpResponse</code>. Similarly, <code>StaticResourceCalloutMock</code> for complex response bodies stored as static resources.",tip:"'For the Zoetis external API integration, every callout test used a dedicated mock class per endpoint. We had a MockFactory class that returned different mock implementations based on the endpoint URL — this made tests clean and readable.'",
+code:`// Mock implementation
+@isTest
+global class MockHttpCallout implements HttpCalloutMock {
+    global HTTPResponse respond(HTTPRequest req) {
+        HTTPResponse res = new HTTPResponse();
+        res.setHeader('Content-Type', 'application/json');
+        res.setBody('{"status":"success","id":"12345"}');
+        res.setStatusCode(200);
+        return res;
+    }
+}
+
+// In test
+@isTest
+static void testCallout() {
+    Test.setMock(HttpCalloutMock.class, new MockHttpCallout());
+    Test.startTest();
+    MyCalloutService.makeRequest('https://api.example.com');
+    Test.stopTest();
+    // assert results
+}`,
+links:[["SF Docs — Callout Mocking","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_restful_http_testing_mock_interface.htm"]]},
+
+{q:"What is TestDataFactory and why should you use it?",tag:"core",a:"A <code>TestDataFactory</code> is a <strong>utility class annotated with @isTest</strong> that centralizes test record creation. Benefits: <strong>DRY principle</strong> — avoid repeating data setup in every test. <strong>Consistency</strong> — all tests use the same valid test records. <strong>Maintainability</strong> — when required fields change, update one factory, not 50 test methods. Pattern: static methods that accept parameters and return sObjects or Lists.",tip:"'At Cognizant, we had a shared TestDataFactory for each client project. When Salesforce admins added required fields, we updated the factory once — not every test class. That factory was one of the highest-value shared utilities on the team.'",
+code:`@isTest
+public class TestDataFactory {
+    public static Account createAccount(String name, Boolean doInsert) {
+        Account acc = new Account(
+            Name = name,
+            Type = 'Customer',
+            BillingCity = 'Kolkata'
+        );
+        if (doInsert) insert acc;
+        return acc;
+    }
+
+    public static List<Contact> createContacts(Id accountId, Integer count, Boolean doInsert) {
+        List<Contact> contacts = new List<Contact>();
+        for (Integer i = 0; i < count; i++) {
+            contacts.add(new Contact(
+                FirstName = 'Test', LastName = 'Contact ' + i,
+                AccountId = accountId
+            ));
+        }
+        if (doInsert) insert contacts;
+        return contacts;
+    }
+}`,
+links:[["SF Docs — TestDataFactory","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_utility_classes.htm"]]},
+
+]},
+
+// ─────────────────────────────────────────────
+// 7. INTEGRATION
+// ─────────────────────────────────────────────
+{id:"integration",title:"Integration & REST APIs",icon:"🔌",desc:"Your background in REST APIs and Spring Boot actually helps here. Salesforce integration questions focus on callouts from Apex and exposing Salesforce as a REST endpoint. Common in MNC SI roles (Infosys, Accenture, Deloitte) where integration work is core.",questions:[
+
+{q:"How do you make an HTTP callout from Apex?",tag:"hot",a:"Use <code>Http</code>, <code>HttpRequest</code>, and <code>HttpResponse</code> classes. Steps: (1) Create <code>HttpRequest req = new HttpRequest()</code>, (2) set endpoint, method, headers, body, (3) <code>Http http = new Http()</code>, (4) <code>HttpResponse res = http.send(req)</code>, (5) parse the response. Named Credentials are the best practice for storing endpoint URLs and auth — they keep credentials out of code and out of version control.",tip:"'I always use Named Credentials for endpoint management — it keeps base URLs and auth out of code, works in sandboxes without code changes, and follows Salesforce security best practices. I learned this pattern handling Zoetis external API calls at Cognizant.'",
+code:`public static void callExternalAPI(String recordId) {
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint('callout:My_Named_Credential/api/v1/records');
+    req.setMethod('POST');
+    req.setHeader('Content-Type', 'application/json');
+    req.setBody('{"id":"' + recordId + '"}');
+    req.setTimeout(10000); // 10 seconds
+
+    Http http = new Http();
+    HttpResponse res = http.send(req);
+
+    if (res.getStatusCode() == 200) {
+        Map<String, Object> result = (Map<String, Object>) JSON.deserializeUntyped(res.getBody());
+        // process result
+    } else {
+        throw new CalloutException('API error: ' + res.getStatusCode() + ' ' + res.getBody());
+    }
+}`,
+links:[["SF Docs — HTTP Callouts","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_http.htm"]]},
+
+{q:"What are Named Credentials and why use them?",tag:"core",a:"Named Credentials are a Salesforce feature that stores <strong>callout endpoint URLs and authentication details</strong> (Basic Auth, OAuth, JWT Bearer) outside of code. Referenced in Apex as <code>callout:NamedCredentialName/path</code>. Benefits: <strong>security</strong> — credentials are encrypted and not visible in code or version control. <strong>Portability</strong> — the same code works across sandboxes/prod by mapping different Named Credentials per environment. <strong>OAuth auto-refresh</strong> — Named Credentials handle token refresh automatically for OAuth flows. Alternative is Remote Site Settings (just whitelists the domain, no auth storage).",tip:"'For every external API at Cognizant, I used Named Credentials — it meant the same callout class worked in sandbox and prod without any code change, and credentials were managed by the admin, not the developer. Security team also required it.'",links:[["SF Docs — Named Credentials","https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm"]]},
+
+{q:"How do you expose Apex as a REST API?",tag:"core",a:"Use <code>@RestResource(urlMapping='/v1/myendpoint/*')</code> on the class (must be global). Methods are annotated with <code>@HttpGet</code>, <code>@HttpPost</code>, <code>@HttpPut</code>, <code>@HttpDelete</code>, <code>@HttpPatch</code>. Use <code>RestContext.request</code> and <code>RestContext.response</code> for input/output. Accessible at <code>https://[instance].salesforce.com/services/apexrest/v1/myendpoint/</code>. Requires authentication (OAuth) by default.",tip:"'I've both consumed external APIs from Apex and exposed Apex as a REST endpoint for an external system to call — so I understand the full integration picture in both directions, which helps when designing integration architectures.'",
+code:`@RestResource(urlMapping='/v1/accounts/*')
+global class AccountRestResource {
+    @HttpGet
+    global static Account getAccount() {
+        RestRequest req = RestContext.request;
+        String accountId = req.requestURI.substring(req.requestURI.lastIndexOf('/') + 1);
+        return [SELECT Id, Name, Type FROM Account WHERE Id = :accountId LIMIT 1];
+    }
+
+    @HttpPost
+    global static String createAccount(String name, String type) {
+        Account acc = new Account(Name=name, Type=type);
+        insert acc;
+        return acc.Id;
+    }
+}`,
+links:[["SF Docs — REST API with Apex","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest_intro.htm"]]},
+
+{q:"What is JSON serialization in Apex?",tag:"core",a:"<strong>JSON.serialize(obj)</strong> — converts any Apex object to a JSON string. <strong>JSON.deserialize(jsonString, TypeName.class)</strong> — converts JSON string back to a typed Apex object. <strong>JSON.deserializeUntyped(jsonString)</strong> — returns Map&lt;String, Object&gt; for unknown structures. For complex nested structures, define wrapper classes matching the JSON shape and use JSON.deserialize for type safety.",tip:"'For external API responses, I use wrapper classes with JSON.deserialize when the structure is known and stable, and deserializeUntyped when it's dynamic — same pattern I use in Spring Boot with Jackson ObjectMapper vs Map parsing.'",
+code:`// Typed deserialization with wrapper
+public class ApiResponse {
+    public String status;
+    public String id;
+    public List<Item> items;
+    
+    public class Item {
+        public String name;
+        public Integer quantity;
+    }
+}
+ApiResponse result = (ApiResponse) JSON.deserialize(res.getBody(), ApiResponse.class);
+System.debug(result.status + ': ' + result.items.size() + ' items');`,
+links:[["SF Docs — JSON Class","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_json.htm"]]},
+
+{q:"What are Platform Events and when would you use them?",tag:"deep",a:"Platform Events are Salesforce's <strong>event-driven messaging</strong> mechanism (based on the Pub/Sub pattern). Define an event object (like an sObject but with __e suffix). Publish via <code>EventBus.publish(new MyEvent__e(...))</code> — this is DML but doesn't count toward DML limit in the publishing transaction. Subscribe via a trigger on the event object (after insert) or via CometD/Streaming API for external subscribers. Use cases: <strong>real-time notifications</strong>, <strong>decoupled integrations</strong> (Salesforce to external), <strong>cross-object orchestration</strong> without tight coupling.",tip:"'I've used Platform Events in place of callouts in trigger context — instead of firing an async callout, the trigger publishes an event, and a separate subscriber handles the callout. This makes the trigger simpler and the integration independently retryable.'",links:[["SF Docs — Platform Events","https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro_emp.htm"]]},
+
+]},
+
+// ─────────────────────────────────────────────
+// 8. LWC & PLATFORM
+// ─────────────────────────────────────────────
+{id:"lwc",title:"LWC & Platform",icon:"🌐",desc:"LWC questions at 8–12 LPA are typically conceptual, not code-heavy. Know the component model, data binding, and how LWC calls Apex. Platform questions cover metadata, deployment, and Salesforce architecture.",questions:[
+
+{q:"What is LWC? How does it differ from Aura Components?",tag:"core",a:"Lightning Web Components (LWC) is Salesforce's modern component framework built on <strong>Web Standards</strong> (Web Components API, ES Modules, Shadow DOM). Aura Components is the older proprietary Salesforce framework. Key differences: LWC uses standard HTML, JS, CSS — no Salesforce-specific syntax in markup. LWC is significantly <strong>faster</strong> (native browser APIs vs Aura's JavaScript framework). LWC uses <strong>reactive properties</strong> (@track, @api, @wire) vs Aura's attribute system. LWC Shadow DOM enforces CSS encapsulation. New development should use LWC; Aura is legacy.",tip:"'I've built LWC components at Cognizant for UI elements on the Abbott org. I prefer LWC's Web Standards approach — it means my JavaScript knowledge (which I also use in React Native for ChefBit) is directly portable.'",links:[["SF Docs — LWC Overview","https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.get_started_introduction"]]},
+
+{q:"What are the decorators in LWC — @api, @track, @wire?",tag:"hot",a:"<strong>@api:</strong> marks a property or method as public — accessible by a parent component. Used for component communication (parent passes data to child). <strong>@track:</strong> in older LWC, needed to make nested object/array properties reactive. In modern LWC (Spring '20+), <code>@track</code> is rarely needed — all fields are reactive by default for primitive reassignment. Still needed for deep mutation of objects/arrays. <strong>@wire:</strong> declaratively calls an Apex method or Lightning Data Service (LDS) and reactively binds the result to a property or function. Automatically re-calls when reactive parameters change.",tip:"Clarify the @track confusion directly: 'Since Spring 2020, @track is only needed when you mutate nested properties of an object and need that mutation to trigger re-render — for most cases, reactive primitives and reassigned objects work without @track.'",
+code:`// LWC component demonstrating all three decorators
+import { LightningElement, api, track, wire } from 'lwc';
+import getAccountContacts from '@salesforce/apex/ContactController.getContacts';
+
+export default class ContactList extends LightningElement {
+    @api recordId; // public — parent passes Account Id
+
+    @wire(getAccountContacts, { accountId: '$recordId' }) // reactive: re-calls when recordId changes
+    contacts;
+
+    @track filterOptions = { includeInactive: false }; // deep mutation needs @track
+}`,
+links:[["LWC Docs — Decorators","https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.js_props_getter_setter"]]},
+
+{q:"How does LWC communicate with Apex?",tag:"core",a:"<strong>Wire service (@wire):</strong> declarative, reactive — auto-calls an Apex method when component loads or reactive params change. Best for read-only data. <strong>Imperative:</strong> call imported Apex method as a JavaScript function (returns a Promise) inside a handler. Best for conditionally triggered calls, DML, or when you need full control over error handling. Apex methods must be <code>@AuraEnabled</code> (and <code>cacheable=true</code> for wire). Cacheable=true methods can be cached client-side and wired; non-cacheable can only be called imperatively.",tip:"'I use wire for data loading on component init — it handles loading/error state automatically. I use imperative calls for save operations or any call that has side effects, since cacheable=true doesn't allow DML.'",
+code:`// Apex side
+@AuraEnabled(cacheable=true)
+public static List<Contact> getContacts(Id accountId) {
+    return [SELECT Id, Name FROM Contact WHERE AccountId = :accountId];
+}
+
+// LWC JS — wire approach
+@wire(getContacts, { accountId: '$recordId' })
+wiredContacts({ data, error }) {
+    if (data) this.contacts = data;
+    if (error) this.error = error;
+}`,
+links:[["LWC Docs — Apex Wire","https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.apex"]]},
+
+{q:"What is Custom Metadata vs Custom Settings? Which to use?",tag:"hot",a:"<strong>Custom Settings:</strong> org-wide or profile/user-level key-value configuration. Two types: List (record per config entry, accessed by Name) and Hierarchy (can override per user/profile). <strong>Advantage:</strong> queries don't count against SOQL governor limits if accessed via static methods. <strong>Custom Metadata:</strong> similar to Custom Settings but records are <strong>deployable as metadata</strong> (included in packages, change sets, sfdx). This is the key difference. <strong>Custom Settings records cannot be deployed</strong> — they must be manually entered in each environment. For any config that needs to travel with deployments (feature flags, environment-specific settings), use Custom Metadata.",tip:"'At Cognizant, we migrated config from Custom Settings to Custom Metadata because sandbox refresh wiped Custom Settings data every time — Custom Metadata records deploy automatically with the package. That was a major DevOps improvement on the Abbott project.'",links:[["SF Docs — Custom Metadata Types","https://help.salesforce.com/s/articleView?id=sf.custommetadatatypes_overview.htm"]]},
+
+{q:"What is the difference between a sandbox and production?",tag:"core",a:"<strong>Production:</strong> live org with real data and users. <strong>Sandbox:</strong> copy of production metadata (and optionally data) for development/testing. Types: <strong>Developer</strong> (5MB data, isolated, fastest to refresh), <strong>Developer Pro</strong> (1GB data), <strong>Partial Copy</strong> (5GB data, sample of prod data), <strong>Full</strong> (full copy of prod data — expensive, takes days to refresh). Changes are promoted from sandbox to production via Change Sets, SFDX/source-tracking deployments, or packages. Sandboxes refresh on a schedule — Full can only refresh every 29 days.",tip:"'On Cognizant projects, we followed Dev → QA sandbox → UAT → Production. Change Sets for smaller changes, SFDX source tracking for larger features. I'm also familiar with scratch orgs for isolated feature development.'",links:[["SF Docs — Sandboxes","https://help.salesforce.com/s/articleView?id=sf.create_test_instance.htm"]]},
+
+]},
+
+// ─────────────────────────────────────────────
+// 9. SCENARIO & DESIGN
+// ─────────────────────────────────────────────
+{id:"scenario",title:"Scenario & Design Questions",icon:"🏗️",desc:"Architecture and design questions determine 8–12 LPA vs higher. These are open-ended — there's no single right answer, but there are wrong patterns. Use your Cognizant client experience to anchor every answer.",questions:[
+
+{q:"Design a Salesforce solution to sync Account records with an external CRM every night.",tag:"design",a:"<strong>Architecture:</strong> Scheduled Apex (Schedulable) runs at 2am → calls Database.executeBatch() → Batch Apex processes Account records in chunks. In execute(): build the HTTP callout payload → call Named Credential endpoint → parse response → upsert matching Accounts using external Id field. In finish(): send notification email/Platform Event with summary. <strong>Error handling:</strong> Database.update(records, false) with partial success + Error_Log__c insertion for failures. <strong>Idempotency:</strong> use external system's unique Id as External ID field — upsert ensures no duplicates on retry.",tip:"Structure your answer as: (1) What triggers it, (2) How the data is fetched/sent, (3) How errors are handled, (4) How conflicts/duplicates are prevented. This is a system design format that works for any integration question.",ctx:"<strong>Callout constraint in Batch:</strong> Standard Batch doesn't allow callouts. Must implement <code>Database.AllowsCallouts</code> interface on the batch class. Without this, the callout will throw a CalloutException.",links:[["SF Docs — Batch with Callouts","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_continuation_overview.htm"]]},
+
+{q:"An Apex trigger on Opportunity is running slowly in production. How would you debug and fix it?",tag:"design",a:"<strong>Step 1 — Diagnose:</strong> Check Debug Logs (Apex logging level = FINEST) for the transaction. Look at total SOQL count, DML count, CPU time. Use Developer Console's Execution Overview. <strong>Step 2 — Identify pattern:</strong> SOQL in a loop? Non-selective query on large dataset? Complex string operations in loop? Nested loops on large lists? <strong>Step 3 — Fix strategies:</strong> Move SOQL out of loop into a pre-built Map. Add indexed field filters to SOQL. Refactor nested loops to use Map lookups. Move expensive processing to async (Queueable/Batch). <strong>Step 4 — Validate:</strong> Test with large data volumes (use Data Loader in sandbox), check Limits at end of transaction via debug logs.",tip:"Real-world framing: 'On the Zoetis project, I debugged a CPU limit exception on an after-update trigger — found nested loops processing related records. Replaced with a Map-keyed approach and CPU dropped from 9.5s to 1.2s. Governor limits are a performance constraint that teaches you to write efficient code by default.'",links:[["SF Docs — Debug Logs","https://help.salesforce.com/s/articleView?id=sf.code_debug_log.htm"]]},
+
+{q:"How would you handle a situation where a trigger must make a callout to an external API?",tag:"design",a:"Direct callouts from triggers are <strong>not allowed</strong> when there are uncommitted DML changes in the same transaction (because if the callout fails, the DML might already be committed — you can't roll back the external call). Solutions: <strong>1. @future method:</strong> pass record Ids to an async method that makes the callout after the transaction commits. <strong>2. Queueable Apex:</strong> enqueue from after-insert/after-update trigger, pass Ids, make callout in execute() — better than @future because job is trackable and can be retried. <strong>3. Platform Events:</strong> trigger publishes an event; a subscriber process (Apex trigger on the event or external subscriber) makes the callout — fully decoupled.",tip:"'My preference is Queueable for most trigger-to-API patterns — it gives me a Job Id to track, I can add retry logic by re-enqueueing on failure, and it handles complex payloads better than @future. Platform Events are my choice when the consumer is external or needs to fan out to multiple systems.'",links:[["SF Docs — Async Callouts","https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_continuation_overview.htm"]]},
+
+{q:"Walk me through a complex feature you built at Cognizant.",tag:"design",a:"<strong>Structure your answer with STAR + technical depth:</strong> Situation: Client (Abbott/Zoetis), business problem. Task: what you were responsible for designing/building. Action: specific technical decisions — trigger framework, async approach, SOQL pattern, error handling. Result: measurable outcome (bugs resolved, performance improvement, deployment success). <strong>Technical specifics to include:</strong> trigger framework pattern used, how you handled bulkification, how you tested it, what governor limit considerations influenced the design, any async processing involved.",tip:"Prepare 2 STAR stories from Cognizant: (1) a complex Apex feature you owned end-to-end, (2) a production issue you diagnosed and fixed. Know the technical details cold — line counts, record volumes, limit numbers if possible. 'I built a trigger handler for Abbott that processed 50,000+ Account records in batch' is infinitely stronger than 'I worked on enterprise clients.'",links:[]},
+
+]},
+
+// ─────────────────────────────────────────────
+// 10. BEHAVIORAL & HR
+// ─────────────────────────────────────────────
+{id:"behavioral",title:"Behavioral & HR",icon:"🎯",desc:"These questions decide your salary band as much as technical ones. For 8–12 LPA, interviewers want to see growth mindset, ownership, and self-awareness. Your unique profile — live app + 6 certifications + client experience — is a genuine differentiator.",questions:[
+
+{q:"Tell me about yourself.",tag:"hot",a:"<strong>Structure: Present → Past → Future (60 seconds max)</strong>. Present: '2+ years at Cognizant as a Salesforce developer — building Apex backends and automated workflows for global healthcare clients including Abbott and Zoetis. I'm 6x Salesforce certified — including Platform Developer I, App Builder, Administrator, and the new Agentforce Specialist.' Past: 'Before Cognizant, I completed a Java internship at LTIMindtree and graduated with a 9.25 GPA — ranked 1st in my final semester.' Future: 'I'm looking to step into a more senior Salesforce developer role where I can take deeper ownership of architecture decisions and work on complex integration challenges.'",tip:"End with a hook toward this specific company: 'I'm particularly interested in [Accenture's SF CoE / Deloitte's cloud practice / LTIMindtree's platform team] because of [specific reason — mention if you know something about their client portfolio or tech focus].' Preparation = interest = seriousness.",ctx:"<strong>For ChefBit:</strong> If asked, mention it naturally but tie it back to Salesforce: 'I also independently built and shipped a production app on Google Play — 1,000+ downloads. The backend engineering discipline I applied there — clean APIs, database design, async processing — reinforces the same principles I use writing production Apex.'",links:[]},
+
+{q:"Why are you looking to switch? Why leave Cognizant?",tag:"hot",a:"<strong>Honest, forward-looking framing:</strong> 'I've had a genuinely good run at Cognizant — strong delivery, 5/5 performance ratings, meaningful client work on Abbott and Zoetis. I'm not leaving because anything is broken. I'm looking to step into a role where I can take on more technical ownership — closer to architecture decisions, more complex integration challenges, and ideally working with a tighter Salesforce CoE team. [Target company] being a specialist in [SF ecosystem work / specific domain] is exactly the kind of environment I want to grow in.' Never mention compensation as the primary driver in opening answers.",tip:"If you're also testing Java opportunities simultaneously, do NOT mention this in Salesforce interviews. In this interview, you are 100% committed to a Salesforce career path. Your 6 certifications and live project experience confirm this commitment.",links:[]},
+
+{q:"You have 6 Salesforce certifications. Which one was hardest? What did you learn from it?",tag:"hot",a:"<strong>Honest answer:</strong> Platform Developer I is the hardest from the developer track — it tests deep Apex, SOQL optimization, testing frameworks, and async processing in ways that surface gaps in production habits, not just syntax knowledge. The Agentforce Specialist was intellectually challenging because it's new territory — generative AI integrations within Salesforce, a shift in how I think about automation. What the certifications collectively gave me: a structured mental model of the entire platform, not just the parts I happened to use at work. They forced me to learn Salesforce Administration depth that makes me a better developer — I understand why certain platform constraints exist.",tip:"Connect certifications to practical impact: 'After PD1 prep, I immediately applied SOQL selectivity patterns to production queries at Cognizant — the certification directly improved my code quality, not just my LinkedIn profile.'",links:[["Trailhead — Platform Developer I","https://trailhead.salesforce.com/en/credentials/platformdeveloper1"]]},
+
+{q:"Describe a time you made a mistake in production. How did you handle it?",tag:"core",a:"<strong>Structure: Honest → Specific → Owned → Resolved → Learned.</strong> Prepare a real example from Cognizant — a trigger that caused unexpected side effects, a DML error in batch that you debugged, a non-selective query that caused timeout. Walk through: what you did, how you identified the issue, what you communicated to the team, how you fixed it, what process change you made afterward to prevent recurrence. The most important parts: taking ownership without deflecting, showing systematic debugging, and demonstrating that you institutionalized the lesson.",tip:"'I won't pretend I've never pushed code with an issue — I've had a trigger recursion scenario surface in UAT at Cognizant. I caught it before production, but the near-miss taught me to add static flag recursion control as a code review checklist item going forward.' Honesty + the word 'checklist' signals maturity.",links:[]},
+
+{q:"What's your experience with Salesforce DevOps / deployment processes?",tag:"core",a:"<strong>Levels to cover:</strong> (1) <strong>Change Sets:</strong> Salesforce's built-in deployment tool — works for straightforward metadata migrations but no source control. (2) <strong>SFDX / SF CLI:</strong> source-driven development with scratch orgs, sfdx-project.json, push/pull commands, much better for team collaboration and CI/CD pipelines. (3) <strong>Source control integration:</strong> GitHub/Bitbucket with VS Code + Salesforce Extension Pack for version tracking. (4) <strong>CI/CD:</strong> tools like Gearset, Copado, Jenkins, or GitHub Actions for automated testing and deployment gates.",tip:"'At Cognizant, our team used a combination of Change Sets for smaller hotfixes and SFDX for larger feature deployments with source control. I'm comfortable with both models and understand the limitations of Change Sets at scale — which is why I've been learning SFDX tooling proactively.'",links:[["Trailhead — Salesforce DX","https://trailhead.salesforce.com/content/learn/trails/sfdx_get_started"]]},
+
+{q:"Where do you see yourself in 2–3 years in Salesforce?",tag:"core",a:"<strong>Anchored, specific, and Salesforce-committed:</strong> 'In 2–3 years, I want to be a Senior Salesforce Developer or Architect — designing end-to-end solution architectures for enterprise clients rather than implementing individual features. I'm particularly interested in the integration space, AI-augmented Salesforce (Agentforce, Einstein), and deepening my experience with multi-cloud solutions. My Agentforce Specialist cert is a deliberate step toward that — AI-native workflows on the platform are where I see the most growth opportunity in the next few years.'",tip:"For Accenture/Deloitte specifically, mention: 'I'm also interested in the path toward Salesforce Architect certifications — Application Architect is my next certification goal.' MNC SIs value candidates who invest in the platform long-term.",links:[]},
+
+]}
+
+]; // end DATA
+
+// ─────────────────────────────────────────────
+// ENGINE
+// ─────────────────────────────────────────────
+const STORAGE_KEY = 'sf_prep_done_v2';
+let done = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify([...done])); }
+
+function renderAll() {
+  const nav = document.getElementById('sidebarNav');
+  const content = document.getElementById('mainContent');
+  nav.innerHTML = ''; content.innerHTML = '';
+
+  let globalTotal = 0;
+  DATA.forEach(s => { globalTotal += s.questions.length; });
+  document.getElementById('globalTotal').textContent = globalTotal;
+
+  DATA.forEach((section, si) => {
+    // Nav item
+    const sectionDone = section.questions.filter((_,qi)=>done.has(section.id+'-'+qi)).length;
+    const navEl = document.createElement('div');
+    navEl.className='nav-item'+(si===0?' active':'');
+    navEl.dataset.section=section.id;
+    navEl.innerHTML=`<div class="nav-icon">${section.icon}</div>${section.title}<span class="nav-progress">${sectionDone}/${section.questions.length}</span>`;
+    navEl.onclick=()=>{
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      navEl.classList.add('active');
+      document.querySelectorAll('.section-wrap').forEach(s=>s.style.display='none');
+      document.getElementById('sec-'+section.id).style.display='block';
+      if(window.innerWidth<=768) toggleSidebar();
+    };
+    nav.appendChild(navEl);
+
+    // Section content
+    const secDiv = document.createElement('div');
+    secDiv.className='section-wrap';
+    secDiv.id='sec-'+section.id;
+    secDiv.style.display=si===0?'block':'none';
+
+    const doneInSection = section.questions.filter((_,qi)=>done.has(section.id+'-'+qi)).length;
+    const pct = Math.round(doneInSection/section.questions.length*100);
+
+    secDiv.innerHTML=`
+      <div class="section-header">
+        <div class="section-badge">${section.icon} ${section.questions.length} Questions</div>
+        <div class="section-title"><em>${section.title}</em></div>
+        <div class="section-desc">${section.desc}</div>
+        <div class="progress-bar-wrap" style="margin-top:14px"><div class="progress-bar-fill" id="pb-${section.id}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num">${section.questions.length}</div><div class="stat-label">Questions</div></div>
+        <div class="stat-card"><div class="stat-num" id="done-${section.id}">${doneInSection}</div><div class="stat-label">Done</div></div>
+        <div class="stat-card"><div class="stat-num" id="pct-${section.id}">${pct}%</div><div class="stat-label">Progress</div></div>
+      </div>
+    `;
+
+    section.questions.forEach((q, qi) => {
+      const key = section.id+'-'+qi;
+      const isDone = done.has(key);
+      const tagMap = {hot:'tag-hot HOT',core:'tag-core CORE',deep:'tag-deep DEEP',design:'tag-design DESIGN'};
+      const [tagCls, tagLabel] = (tagMap[q.tag]||'tag-core CORE').split(' ');
+
+      const card = document.createElement('div');
+      card.className='q-card'+(isDone?' done':'');
+      card.id='card-'+key;
+
+      let bodyContent = `<div class="answer-box">${q.a}</div>`;
+      if(q.code) bodyContent += `<div class="code-block">${escHtml(q.code)}</div>`;
+      if(q.tip) bodyContent += `<div class="tip-box">${q.tip}</div>`;
+      if(q.ctx) bodyContent += `<div class="ctx-box">${q.ctx}</div>`;
+      if(q.warn) bodyContent += `<div class="warn-box">${q.warn}</div>`;
+      if(q.links && q.links.length) {
+        bodyContent += `<div class="links-row">${q.links.map(([t,u])=>`<a class="link-pill" href="${u}" target="_blank">↗ ${t}</a>`).join('')}</div>`;
+      }
+
+      card.innerHTML=`
+        <div class="q-header" onclick="toggleQ(this,'${key}')">
+          <span class="q-num">${(qi+1).toString().padStart(2,'0')}</span>
+          <span class="q-text">${q.q}</span>
+          <div class="q-right">
+            <span class="q-tag ${tagCls}">${tagLabel}</span>
+            <button class="check-btn" onclick="toggleDone(event,'${key}','${section.id}')">${isDone?'✓':'○'}</button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="q-body" id="body-${key}">${bodyContent}</div>
+      `;
+      secDiv.appendChild(card);
+    });
+
+    content.appendChild(secDiv);
+  });
+
+  updateGlobalCount();
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function toggleQ(header, key) {
+  const body = document.getElementById('body-'+key);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+
+function toggleDone(e, key, sectionId) {
+  e.stopPropagation();
+  const card = document.getElementById('card-'+key);
+  const btn = card.querySelector('.check-btn');
+  if(done.has(key)) {
+    done.delete(key);
+    card.classList.remove('done');
+    btn.textContent='○';
+  } else {
+    done.add(key);
+    card.classList.add('done');
+    btn.textContent='✓';
+  }
+  save();
+  updateSectionProgress(sectionId);
+  updateGlobalCount();
+}
+
+function updateSectionProgress(sectionId) {
+  const section = DATA.find(s=>s.id===sectionId);
+  const doneCount = section.questions.filter((_,qi)=>done.has(sectionId+'-'+qi)).length;
+  const total = section.questions.length;
+  const pct = Math.round(doneCount/total*100);
+  const dEl = document.getElementById('done-'+sectionId);
+  const pEl = document.getElementById('pct-'+sectionId);
+  const pb = document.getElementById('pb-'+sectionId);
+  if(dEl) dEl.textContent=doneCount;
+  if(pEl) pEl.textContent=pct+'%';
+  if(pb) pb.style.width=pct+'%';
+  // update nav
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.dataset.section===sectionId) {
+      n.querySelector('.nav-progress').textContent=`${doneCount}/${total}`;
+    }
+  });
+}
+
+function updateGlobalCount() {
+  document.getElementById('globalCount').textContent=done.size;
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('open');
+}
+
+renderAll();
+</script>
+</body>
+</html>
